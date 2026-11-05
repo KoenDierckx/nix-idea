@@ -22,10 +22,20 @@ import java.nio.file.Path
 internal class NixLspClientDescriptor(project: Project, private var settings: NixLspSettings) :
     ProjectWideLspClientDescriptor(project, "Nix") {
 
+    private val wslPathMapper = project.basePath?.let(WslUncPathMapper::fromProjectPath)
+
     @Throws(ExecutionException::class)
     override fun createCommandLine(): GeneralCommandLine {
         val argv = ParametersListUtil.parse(settings.command, false, true)
         return GeneralCommandLine(argv).withWorkingDirectory(project.basePath?.let(Path::of))
+    }
+
+    override fun getFilePath(file: VirtualFile): String {
+        return wslPathMapper?.toWslPath(file.path) ?: super.getFilePath(file)
+    }
+
+    override fun findLocalFileByPath(path: String): VirtualFile? {
+        return super.findLocalFileByPath(wslPathMapper?.toUncPath(path) ?: path)
     }
 
     override fun isSupportedFile(file: VirtualFile): Boolean {
