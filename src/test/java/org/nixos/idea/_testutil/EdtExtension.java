@@ -2,6 +2,7 @@ package org.nixos.idea._testutil;
 
 import com.intellij.ide.IdeEventQueue;
 import com.intellij.testFramework.EdtTestUtil;
+import com.intellij.testFramework.PlatformTestUtil;
 import org.junit.jupiter.api.extension.DynamicTestInvocationContext;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
@@ -82,11 +83,14 @@ final class EdtExtension implements InvocationInterceptor {
 
         return () -> {
             try {
-                // Make sure all deferred tasks have finished
-                boolean incomplete;
-                do {
-                    incomplete = EdtTestUtil.runInEdtAndGet(() -> IdeEventQueue.getInstance().peekEvent() != null);
-                } while (incomplete);
+                EdtTestUtil.runInEdtAndWait(() -> {
+                    // A deferred task can enqueue another invocation after the drain's canary, so repeat until idle.
+                    boolean incomplete;
+                    do {
+                        uncaughtExceptions.execute(PlatformTestUtil::dispatchAllInvocationEventsInIdeEventQueue);
+                        incomplete = IdeEventQueue.getInstance().peekEvent() != null;
+                    } while (incomplete);
+                });
             } finally {
                 edt.setUncaughtExceptionHandler(previousExceptionHandler);
             }
