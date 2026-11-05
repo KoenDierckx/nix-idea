@@ -3,7 +3,7 @@ package org.nixos.idea.lsp
 import com.intellij.openapi.options.BoundSearchableConfigurable
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.ProjectManager
-import com.intellij.platform.lsp.api.LspServerManager
+import com.intellij.platform.lsp.api.LspClientManager
 import com.intellij.ui.RawCommandLineEditor
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.dsl.builder.AlignX
@@ -51,7 +51,7 @@ class NixLspSettingsConfigurable :
         super.apply()
         reset() // Update UI components to use normalized property values
         for (project in ProjectManager.getInstance().openProjects) {
-            LspServerManager.getInstance(project).stopAndRestartIfNeeded(NixLspServerSupportProvider::class.java)
+            LspClientManager.getInstance(project).stopAndRestartClientsIfNeeded(NixLspIntegrationProvider::class.java)
         }
     }
 }

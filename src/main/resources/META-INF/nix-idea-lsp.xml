@@ -10,8 +10,8 @@
                 id="org.nixos.idea.lsp.NixLspSettingsConfigurable"
                 instance="org.nixos.idea.lsp.NixLspSettingsConfigurable"/>
 
-        <platform.lsp.serverSupportProvider
-                implementation="org.nixos.idea.lsp.NixLspServerSupportProvider"/>
+        <platform.lsp.integrationProvider
+                implementation="org.nixos.idea.lsp.NixLspIntegrationProvider"/>
 
     </extensions>
 </idea-plugin>

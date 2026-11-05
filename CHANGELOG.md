@@ -8,6 +8,9 @@
 
 ### Changed
 
+- Run the external formatter and language server in the project's execution environment (including WSL).
+- Require IntelliJ IDEA 2026.1.5 or later for project-environment process support.
+
 ### Deprecated
 
 ### Removed

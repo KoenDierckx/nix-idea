@@ -61,7 +61,7 @@ public final class NixExternalFormatter extends AsyncDocumentFormattingService {
         var commandLine = new GeneralCommandLine(argv);
 
         if (nixSettings.isFormatCommandRunInFileDirectory()) {
-            commandLine.setWorkDirectory(ioFile.getParent());
+            commandLine.withWorkingDirectory(ioFile.toPath().getParent());
         }
 
         return new FormattingTask() {
@@ -75,7 +75,10 @@ public final class NixExternalFormatter extends AsyncDocumentFormattingService {
                         return;
                     }
                     try {
-                        handler = new OSProcessHandler(commandLine.withCharset(StandardCharsets.UTF_8));
+                        handler = NixProcessHandlerFactory.create(
+                                request.getContext().getProject(),
+                                commandLine.withCharset(StandardCharsets.UTF_8)
+                        );
                     } catch (ExecutionException e) {
                         request.onError("NixIDEA", e.getMessage());
                         return;
